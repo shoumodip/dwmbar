@@ -1,0 +1,28 @@
+#!/bin/sh
+# Statusbar text generator for `dwmstatus`
+
+status_cache_file="$XDG_CACHE_HOME/dwmstatus"
+
+# Modules
+status_modules="
+volume
+clock
+"
+
+# Refreshes a module
+refresh() {
+    sed -i "s/^$1|.*/$1|$(eval $1)/g" "$status_cache_file"
+    dwmstatus
+}
+
+# Reload the statusbar
+reload() {
+    >"$status_cache_file"
+    for module in $status_modules; do
+        echo "$module|$(eval $module)" >> "$status_cache_file"
+    done
+
+    dwmstatus
+}
+
+$@

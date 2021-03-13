@@ -1,0 +1,8 @@
+#!/bin/sh
+# Statusbar for DWM
+
+status_cache_file="$XDG_CACHE_HOME/dwmstatus"
+
+[ ! -f "$status_cache_file" ] && touch "$status_cache_file"
+
+xsetroot -name "$(cut -d'|' -f2- "$status_cache_file" | tr '\n' '\r' | sed 's/\r/ | /g;s/ | $//')"
