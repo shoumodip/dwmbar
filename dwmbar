@@ -6,10 +6,10 @@ status_cache_file="$XDG_CACHE_HOME/dwmstatus"
 # Modules
 status_modules="
 volume
-clock
+clock|60
 "
 
-# Refreshes a module
+# Refresh a module
 refresh() {
     sed -i "s/^$1|.*/$1|$(eval $1)/g" "$status_cache_file"
     dwmstatus
@@ -18,11 +18,54 @@ refresh() {
 # Reload the statusbar
 reload() {
     >"$status_cache_file"
+
     for module in $status_modules; do
+        module="$(echo $module | cut -d '|' -f1)"
         echo "$module|$(eval $module)" >> "$status_cache_file"
     done
 
     dwmstatus
 }
 
+# For the timer modules
+loop() {
+    timer_modules=""
+
+    # Get the modules which request the timer
+    for module in $status_modules; do
+        time="$(echo $module | cut -d '|' -f2)"
+
+        # Add it to the list of timers if it is valid
+        case "$time" in
+            [0-9]*)
+
+                if [ $time -gt 0 ]; then
+                    module="$(echo "$module" | cut -d '|' -f1)"
+                    timer_modules="$timer_modules\n$time|$module"
+                fi
+
+                ;;
+        esac
+    done
+
+    timer_modules="$(echo "$timer_modules" | sed '1d')"
+
+    # Start the timer
+    timer=0
+    while :; do
+
+        # Check if any module requires an update
+        for module in $timer_modules; do
+            time=$(echo $module | cut -d '|' -f1)
+            module="$(echo "$module" | cut -d '|' -f2-)"
+
+            [ $(expr $timer % $time) -eq 0 ] && refresh "$module"
+        done
+
+        sleep 1
+        timer=$(($timer+1))
+    done
+}
+
+# Execute the commands given
 $@
