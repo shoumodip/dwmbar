@@ -1,18 +1,16 @@
 #!/bin/sh
-# Statusbar text generator for `dwmstatus`
+# Modular statusbar for DWM written in POSIX shell
 
-status_cache_file="$XDG_CACHE_HOME/dwmstatus"
-
-# Modules
-status_modules="
-volume
-clock|60
-"
+# Display the status text
+display () {
+    xsetroot -name "$(cut -d'|' -f2- "$status_cache_file" | tr '\n' '\r' | sed "s/\r/$modules_separator/g;s/$modules_separator$//")"
+}
 
 # Refresh a module
 refresh() {
     sed -i "s/^$1|.*/$1|$(eval $1)/g" "$status_cache_file"
-    dwmstatus
+
+    display
 }
 
 # Reload the statusbar
@@ -24,7 +22,7 @@ reload() {
         echo "$module|$(eval $module)" >> "$status_cache_file"
     done
 
-    dwmstatus
+    display
 }
 
 # For the timer modules
@@ -66,6 +64,38 @@ loop() {
         timer=$(($timer+1))
     done
 }
+
+# The cache file for the status text
+status_cache_file="$XDG_CACHE_HOME/dwmstatus"
+
+# Create the cache file if it is not created already
+[ ! -f "$status_cache_file" ] && touch "$status_cache_file" && reload
+
+# Modules separated by a newline
+#
+# Syntax:
+#   <command>(|<seconds>)?
+#
+# Where:
+#   command: The name of the command to run; NOTE: ONLY the name
+#   seconds: The optional value in seconds to repeat the module after
+#
+# Example:
+#
+# status_modules="
+# volume
+# clock|60
+# "
+#
+# The `volume` is a non-looping module which executes
+# The `clock` module will be refreshed every 60 seconds
+status_modules="
+volume
+clock|60
+"
+
+# The separator between the modules
+modules_separator=" | "
 
 # Execute the commands given
 $@
