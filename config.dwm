@@ -1,0 +1,28 @@
+#!/bin/sh
+# The configuration for the status bar
+
+# The cache file for the status text
+status_cache_file=~/.cache/dwmstatus
+
+# Modules separated by a newline
+#
+# Syntax:
+#   <command>(|<seconds>)?
+#
+# Where:
+#   command: The name of the command to run; NOTE: ONLY the name
+#   seconds: The optional value in seconds to repeat the module after
+#
+# Example:
+#
+# status_modules="
+# volume
+# clock|60
+# "
+#
+# The `volume` is a non-looping module which executes
+# The `clock` module will be refreshed every 60 seconds
+status_modules=""
+
+# The separator between the modules
+modules_separator=" | "
