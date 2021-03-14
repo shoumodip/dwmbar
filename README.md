@@ -6,7 +6,7 @@ A modular status bar for the [dwm](https://dwm.suckless.org) written in POSIX co
 $ git clone https://git@github.com:shoumodip/dwmbar
 $ cd dwmbar
 $ sudo mv dwmbar /usr/bin/
-$ sudo mv config.dwm ~/.config/
+$ mv config.dwm ~/.config/
 ```
 
 ## Configuration
