@@ -30,7 +30,7 @@ clock
 
 This configuration defines a statusbar with two modules: `volume` and `clock`. Both of these are scripts located in `$PATH`.
 
-You might me questioning as to why pipes are not allowed? I mean they *are* the holy grail of shell scripting, right? And there's a simple reason for that: **Timers**
+You might be weirded out on the "no pipes allowed" rule. I mean they *are* the holy grail of shell scripting, right? And there's a simple reason for that: **Timers**
 
 Here's an example:
 ```sh
@@ -40,7 +40,7 @@ clock|60
 "
 ```
 
-The syntax for a timed module is `<command>|<seconds>`. So in the example above, the `clock` module will be refreseh every 60 seconds, which makes perfect sense. A clock is *supposed* to update, that's what it's there for in the first place!
+The syntax for a timed module is `<command>|<seconds>`. So in the example above, the `clock` module will be refreshed every 60 seconds, which makes perfect sense. A clock is *supposed* to update, that's what it's there for in the first place!
 
 ## Actions
 There are a grand total of 4 actions which `dwmbar` exposes to you. These are useful in scripts, where you might want to control the statusbar.
@@ -99,7 +99,7 @@ Constructs used:
 - `for ... in; do ... done`
 
 ### `loop`
-Start the loop of the statusbar. Use this if you have some modules which are to repeated after a specific interval.
+Start the loop of the statusbar. Use this if you have some modules which are to be repeated after a specific interval.
 
 Command:
 ```console
