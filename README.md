@@ -63,7 +63,7 @@ Requires:
 - `cut`
 - `tr`
 - `sed`
-- `tac`
+- `cat`
 
 ### `refresh`
 Refresh a module. Takes the name of the module as the argument.

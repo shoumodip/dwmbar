@@ -6,7 +6,7 @@
 
 # Display the status text
 display () {
-    xsetroot -name "$(tac "$status_cache_file" | cut -d'|' -f2- | tr '\n' '\r' | sed "s/\r/$modules_separator/g;s/$modules_separator$//")"
+    xsetroot -name "$(cat "$status_cache_file" | cut -d'|' -f2- | tr '\n' '\r' | sed "s/\r/$modules_separator/g;s/$modules_separator$//")"
 }
 
 # Refresh a module
