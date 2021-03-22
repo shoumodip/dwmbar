@@ -6,65 +6,68 @@
 
 # Display the status text
 display () {
-    xsetroot -name "$(cat "$status_cache_file" | cut -d'|' -f2- | tr '\n' '\r' | sed "s/\r/$modules_separator/g;s/$modules_separator$//")"
+  xsetroot -name "$(cat "$status_cache_file" | cut -d'|' -f2- | tr '\n' '\r' | sed "s/\r/$modules_separator/g;s/$modules_separator$//")"
 }
 
 # Refresh a module
 refresh() {
-    echo "$(sed "s/^$1|.*/$1|$(eval $1)/g" "$status_cache_file")" > "$status_cache_file"
-    display
+  echo "$(sed "s/^$1|.*/$1|$(eval $1 | sed 's|/|\\/|g')/g" "$status_cache_file")" > "$status_cache_file"
+  display
 }
 
 # Reload the statusbar
 reload() {
-    >"$status_cache_file"
+  >"$status_cache_file"
 
-    for module in $status_modules; do
-        module="$(echo $module | cut -d '|' -f1)"
-        echo "$module|$(eval $module)" >> "$status_cache_file"
-    done
+  for module in $status_modules; do
+    module="$(echo $module | cut -d '|' -f1)"
+    echo "$module|$(eval $module)" >> "$status_cache_file"
+  done
 
-    display
+  display
 }
 
 # For the timer modules
 loop() {
-    timer_modules=""
+  timer_modules=""
 
-    # Get the modules which request the timer
-    for module in $status_modules; do
-        time="$(echo $module | cut -d '|' -f2)"
+  # Get the modules which request the timer
+  for module in $status_modules; do
+    time="$(echo $module | cut -d '|' -f2)"
 
-        # Add it to the list of timers if it is valid
-        case "$time" in
-            [0-9]*)
+    # Add it to the list of timers if it is valid
+    case "$time" in
+      [0-9]*)
 
-                if [ $time -gt 0 ]; then
-                    module="$(echo "$module" | cut -d '|' -f1)"
-                    timer_modules="$timer_modules\n$time|$module"
-                fi
+        if [ $time -gt 0 ]; then
+          module="$(echo "$module" | cut -d '|' -f1)"
+          timer_modules="$timer_modules\n$time|$module"
+        fi
 
-                ;;
-        esac
+        ;;
+    esac
+  done
+
+  timer_modules="$(echo "$timer_modules" | sed '1d')"
+
+  # Reload the bar
+  reload
+
+  # Start the timer
+  timer=0
+  while :; do
+
+    # Check if any module requires an update
+    for module in $timer_modules; do
+      time=$(echo $module | cut -d '|' -f1)
+      module="$(echo "$module" | cut -d '|' -f2-)"
+
+      [ $(expr $timer % $time) -eq 0 ] && refresh "$module"
     done
 
-    timer_modules="$(echo "$timer_modules" | sed '1d')"
-
-    # Start the timer
-    timer=0
-    while :; do
-
-        # Check if any module requires an update
-        for module in $timer_modules; do
-            time=$(echo $module | cut -d '|' -f1)
-            module="$(echo "$module" | cut -d '|' -f2-)"
-
-            [ $(expr $timer % $time) -eq 0 ] && refresh "$module"
-        done
-
-        sleep 1
-        timer=$(($timer+1))
-    done
+    sleep 1
+    timer=$(($timer+1))
+  done
 }
 
 # Create the cache file if it is not created already
